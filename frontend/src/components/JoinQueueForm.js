@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const JoinQueueForm = () => {
+function JoinQueueForm() {
   const [name, setName] = useState('');
   const [helpTopic, setHelpTopic] = useState('React');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     axios.post('http://localhost:5001/api/queue/join', { name, helpTopic })
       .then(() => {
         setName('');
-        alert('Joined queue!');
+        alert('Successfully joined the queue!');
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        let errorMessage = 'Failed to join queue. Please try again.';
+        if (error.response) {
+          errorMessage = error.response.data.error || errorMessage;
+        }
+        alert(errorMessage);
+      });
   };
 
   return (
@@ -32,6 +39,6 @@ const JoinQueueForm = () => {
       <button type="submit">Join Queue</button>
     </form>
   );
-};
+}
 
 export default JoinQueueForm;
