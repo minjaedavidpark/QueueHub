@@ -3,6 +3,7 @@ import QueueList from './components/QueueList';          // Component to display
 import AdminPanel from './components/AdminPanel';        // Component for admin controls
 import JoinQueueForm from './components/JoinQueueForm';  // Form for users to join the queue
 import Auth from './components/Auth';
+import QueueStatusTracker from './components/QueueStatusTracker';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -45,12 +46,17 @@ function App() {
     return <AdminPanel adminKey={adminKey} onLogout={handleLogout} />;
   }
 
+  if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+    Notification.requestPermission();
+  }
+
   return (
     <div className="App">
       <h2>User View</h2>
       <button onClick={handleLogout}>Logout</button>
       {/* JoinQueueForm allows users to add themselves to the queue */}
       <JoinQueueForm />
+      <QueueStatusTracker />
       {/* QueueList displays the current queue */}
       <QueueList />
       

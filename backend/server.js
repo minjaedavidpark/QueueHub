@@ -17,6 +17,8 @@ let isQueuePaused = false;
 let queue = [];
 let nextId = 1;
 
+const AVERAGE_HELP_TIME_MINUTES = 15; // Average time spent helping each student
+
 // Add these new routes before your existing routes
 app.post('/api/auth/register', async (req, res) => {
   const { username, password } = req.body;
@@ -90,11 +92,39 @@ app.post('/api/queue/join', authenticateUser, (req, res) => {
     name: user.username,
     helpTopic,
     timestamp: new Date(),
-    status: "Waiting"
+    status: "Waiting",
+    estimatedWaitTime: queue.length * AVERAGE_HELP_TIME_MINUTES, // in minutes
+    position: queue.length + 1
   };
+  
+  // Update wait times for all users in queue
+  queue = queue.map((entry, index) => ({
+    ...entry,
+    position: index + 1,
+    estimatedWaitTime: index * AVERAGE_HELP_TIME_MINUTES
+  }));
   
   queue.push(newEntry);
   res.status(201).json(newEntry);
+});
+
+// Add a new endpoint to get user's position and wait time
+app.get('/api/queue/status/:userId', authenticateUser, (req, res) => {
+  const entry = queue.find(e => e.userId === parseInt(req.params.userId));
+  if (!entry) {
+    return res.status(404).json({ error: "Not in queue" });
+  }
+
+  const position = queue.findIndex(e => e.userId === parseInt(req.params.userId)) + 1;
+  const estimatedWaitTime = (position - 1) * AVERAGE_HELP_TIME_MINUTES;
+
+  res.json({
+    position,
+    estimatedWaitTime,
+    queueLength: queue.length,
+    helpTopic: entry.helpTopic,
+    status: entry.status
+  });
 });
 
 // Add a new route to leave queue
