@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const QueueList = () => {
   const [queue, setQueue] = useState([]);
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   // Fetch the queue every 5 seconds.
   useEffect(() => {
@@ -18,14 +19,27 @@ const QueueList = () => {
   }, []);
 
   return (
-    <div>
-      <ul>
-        {queue.map((entry) => (
-          <li key={entry.id}>
-            {entry.name} - {entry.helpTopic}
-          </li>
-        ))}
-      </ul>
+    <div className="queue-list">
+      <h3>Current Queue</h3>
+      {queue.length === 0 ? (
+        <p>Queue is empty</p>
+      ) : (
+        <ul>
+          {queue.map((entry) => (
+            <li key={entry.id} className="queue-item">
+              <div className="queue-item-header">
+                <span className="name">{entry.name}</span>
+                <span className="topic">{entry.helpTopic}</span>
+              </div>
+              {(isAdmin || entry.userId === JSON.parse(atob(localStorage.getItem('token').split('.')[1])).userId) && (
+                <div className="question">
+                  <strong>Question:</strong> {entry.question}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

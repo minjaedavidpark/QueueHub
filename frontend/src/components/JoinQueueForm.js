@@ -5,24 +5,32 @@ function JoinQueueForm() {
   const [helpTopic, setHelpTopic] = useState('React');
   const [previousAttempts, setPreviousAttempts] = useState(0);
   const [deadlineProximity, setDeadlineProximity] = useState(48);
+  const [question, setQuestion] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     
+    if (!question.trim()) {
+      setError('Please describe what you need help with');
+      return;
+    }
+
     axios.post('http://localhost:5001/api/queue/join', 
       {
         helpTopic,
         previousAttempts,
         deadlineProximity,
-        firstTimeAsking: localStorage.getItem(`asked_${helpTopic}`) === null
+        firstTimeAsking: localStorage.getItem(`asked_${helpTopic}`) === null,
+        question: question.trim()
       },
       { headers: { Authorization: `Bearer ${token}` }}
     )
       .then(() => {
         localStorage.setItem(`asked_${helpTopic}`, 'true');
         alert('Successfully joined the queue!');
+        setQuestion(''); // Clear the question field after successful submission
       })
       .catch((error) => {
         setError(error.response?.data?.error || 'Failed to join queue');
@@ -58,6 +66,19 @@ function JoinQueueForm() {
           </select>
         </div>
         
+        <div className="form-group">
+          <label>What do you need help with?</label>
+          <textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Briefly describe your question or issue..."
+            rows="3"
+            maxLength="200"
+            required
+          />
+          <small>{200 - question.length} characters remaining</small>
+        </div>
+
         <div className="form-group">
           <label>How many times have you tried to solve this?</label>
           <input
