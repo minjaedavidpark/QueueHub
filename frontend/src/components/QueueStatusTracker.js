@@ -64,10 +64,6 @@ const QueueStatusTracker = () => {
               : `${Math.floor(status.estimatedWaitTime / 60)}h ${status.estimatedWaitTime % 60}m`}
           </span>
         </div>
-        <div className="status-item">
-          <span className="status-label">Topic:</span>
-          <span className="status-value">{status.helpTopic}</span>
-        </div>
         <div className="progress-bar">
           <div 
             className="progress-fill"
