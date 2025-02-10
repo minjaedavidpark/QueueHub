@@ -71,38 +71,78 @@ app.get('/api/queue', (req, res) => {
   res.json(queue);
 });
 
-// Student joins the queue
-app.post('/api/queue/join', authenticateUser, (req, res) => {
-  const { helpTopic, previousAttempts, deadlineProximity, firstTimeAsking, question } = req.body;
-  const user = users.find(u => u.id === req.userId);
-  
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
+app.post('/api/queue/join', (req, res) => {
+  const adminKey = req.headers['admin-key'];
+  const isAdmin = adminKey === 'secret123';
+
+  if (isAdmin) {
+    // Admin adding a user (existing code)
+    const { name, helpTopic } = req.body;
+    if (!name || !helpTopic) {
+      return res.status(400).json({ error: "Name and help topic required" });
+    }
+
+    const newEntry = {
+      id: nextId++,
+      userId: -1, // Special ID for admin-added users
+      name,
+      helpTopic,
+      timestamp: new Date(),
+      status: "Waiting",
+      estimatedWaitTime: queue.length * 15,
+      position: queue.length + 1,
+      question: '',
+      previousAttempts: 0,
+      deadlineProximity: 'none',
+      firstTimeAsking: false
+    };
+
+    queue.push(newEntry);
+    return res.status(201).json(newEntry);
   }
 
-  // Check if user is already in queue
-  if (queue.some(entry => entry.userId === req.userId)) {
-    return res.status(400).json({ error: "You are already in queue" });
-  }
+  // Regular user authentication
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: "No token provided" });
 
-  const newEntry = {
-    id: queue.length + 1,
-    userId: req.userId,
-    name: user.username,
-    helpTopic,
-    question,
-    timestamp: new Date(),
-    status: "Waiting",
-    estimatedWaitTime: queue.length * 15, // 15 minutes per person
-    position: queue.length + 1,
-    previousAttempts,
-    deadlineProximity,
-    firstTimeAsking
-  };
-  
-  queue.push(newEntry);
-  
-  res.status(201).json(newEntry);
+  try {
+    // Verify JWT token
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
+    const user = users.find(u => u.id === userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Existing user join logic
+    if (queue.some(entry => entry.userId === userId)) {
+      return res.status(400).json({ error: "You are already in queue" });
+    }
+
+    const { helpTopic, previousAttempts, deadlineProximity, firstTimeAsking, question } = req.body;
+
+    const newEntry = {
+      id: nextId++,
+      userId,
+      name: user.username,
+      helpTopic,
+      question,
+      timestamp: new Date(),
+      status: "Waiting",
+      estimatedWaitTime: queue.length * 15,
+      position: queue.length + 1,
+      previousAttempts,
+      deadlineProximity,
+      firstTimeAsking
+    };
+
+    queue.push(newEntry);
+    res.status(201).json(newEntry);
+
+  } catch (err) {
+    res.status(401).json({ error: "Invalid token" });
+  }
 });
 
 // Add a new endpoint to get user's position and wait time

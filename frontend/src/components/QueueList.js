@@ -14,7 +14,7 @@ const QueueList = () => {
     };
 
     fetchQueue();
-    const interval = setInterval(fetchQueue, 5000);
+    const interval = setInterval(fetchQueue, 2000);
     return () => clearInterval(interval);
   }, []);
 

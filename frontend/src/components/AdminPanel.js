@@ -54,7 +54,6 @@ const AdminPanel = ({ adminKey, onLogout }) => {
       });
   };
 
-  // Handler for the admin to add a new user to the queue
   const handleAddUser = (e) => {
     e.preventDefault();
     const data = {
@@ -62,11 +61,14 @@ const AdminPanel = ({ adminKey, onLogout }) => {
       helpTopic: newUserHelpTopic,
     };
     axios
-      .post('http://localhost:5001/api/queue/join', data)
+      .post('http://localhost:5001/api/queue/join', data, {
+        headers: { 
+          'admin-key': adminKey,  // Add admin key header
+          'Content-Type': 'application/json' 
+        }
+      })
       .then((res) => {
-        // Append the new user to the queue state
         setQueue([...queue, res.data]);
-        // Reset the form fields
         setNewUserName('');
         setNewUserHelpTopic('React');
       })

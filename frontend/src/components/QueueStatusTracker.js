@@ -31,7 +31,7 @@ const QueueStatusTracker = () => {
       }
     };
 
-    const interval = setInterval(checkStatus, 5000);
+    const interval = setInterval(checkStatus, 2000);
     checkStatus();
 
     return () => clearInterval(interval);
