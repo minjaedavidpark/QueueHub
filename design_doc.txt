@@ -1,0 +1,138 @@
+QueueHub
+
+Project Background: The Chaos of Office Hours
+In the bustling hallways of University of Toronto, the computer science department faced a recurring dilemma every semester. During peak office hours, students would crowd outside Professor Pitt’s door, scribbling their names on a whiteboard to secure a spot for help with assignments. The system worked… until it didn’t.
+
+One rainy Tuesday afternoon, tensions flared. A first-year student, Alex, arrived early to ask for help debugging their code, only to find the whiteboard erased accidentally by a janitor. Meanwhile, TAs like Priya juggled handwritten notes and frantic Slack messages, struggling to track who was next. Students waited for hours, refreshing their emails for updates that never came. By the time Alex finally got help, the lab had closed, and frustration hung thick in the air.
+This wasn’t just a Toronto problem. Across campuses worldwide, office hours had become a relic of inefficiency. Students missed meals, TAs burned out, and professors wasted time managing chaos instead of mentoring. The pandemic’s shift to hybrid learning only made things worse—virtual queues in Zoom chats scrolled too fast, while in-person students felt ignored.
+
+The Spark of Inspiration
+The idea struck during a late-night hackathon. A team of students—David, Jaffar, and Rohan—bonded over shared horror stories of office-hour chaos. Jasmine recalled waiting 90 minutes just to ask a 2-minute question. Liam, a TA, admitted he’d accidentally skipped students because his paper list got shuffled. Rohan, a transfer student, joked, “Why is ordering pizza easier than getting help from a professor?”
+
+The trio realized: if apps could manage grocery lines or restaurant waitlists, why not education? They envisioned a digital queue system that was fair, transparent, and stress-free. A tool where:
+Students could join a queue remotely, see their position in real time, and get notified when their turn neared.
+TAs and professors could focus on teaching, not logistics, with automated prioritization and analytics.
+Departments could reduce wait times and track demand trends.
+
+The Mission
+Their project, QueueFlow, was born—a platform to transform office hours from a source of anxiety into a seamless experience. By blending real-time tech with user-centric design, they aimed to empower educators and students alike. No more erased whiteboards, missed turns, or wasted hours. Just learning, simplified.
+
+Why It Matters
+Education thrives on accessibility and equity. QueueFlow isn’t just about convenience—it’s about ensuring every student gets the support they need, whether they’re juggling jobs, disabilities, or time zones. For TAs and professors, it’s a lifeline to reclaim their time and energy. In a world where technology often isolates, QueueFlow seeks to reconnect.
+
+1. Project Overview
+Objective: Create a digital queue system to manage office hours, TA help sessions, or other similar scenarios.
+Key Features:
+Real-time queue visualization
+Student sign-up/removal from queue
+Notifications (email/SMS) when a user's turn approaches
+Wait time estimation
+Admin controls (e.g., prioritize students, pause the queue, remove users)
+User authentication (students, TAs, professors)
+Queue history/analytics
+
+2. Tech Stack Suggestions
+Component
+Options
+Frontend
+React
+Backend
+Node.js (Express)
+Database
+PostgreSQL
+Real-Time
+WebSockets (Socket.io), Firebase, or Pusher
+Notifications
+Twilio (SMS), SendGrid (Email), or in-app notifications
+Hosting
+Azure
+Auth
+Firebase Auth, Auth0, or custom JWT-based authentication
+Testing
+Jest (JS), Pytest (Python), Cypress (E2E)
+
+
+3. Project Structure
+project-root/
+├── frontend/
+│   ├── src/
+│   │   ├── components/       # React/Vue components
+│   │   │   ├── QueueList.js
+│   │   │   ├── JoinQueueForm.js
+│   │   │   └── AdminPanel.js
+│   │   ├── App.js
+│   │   └── index.js
+│
+├── backend/
+│   ├── routes/
+│   │   ├── queue.js         # API endpoints for queue operations
+│   │   └── auth.js          # Authentication endpoints
+│   ├── models/
+│   │   ├── User.js          # User schema
+│   │   └── QueueEntry.js    # Queue entry schema
+│   └── server.js
+└── README.md
+4. Development Phases
+Phase 1: Minimal Viable Product (MVP)
+Basic Queue Functionality
+Users can join/leave the queue.
+Admins can view/manage the queue (e.g., mark students as "helped").
+Simple UI showing the current queue order.
+User Authentication
+Sign-up/login for students and admins.
+Role-based access (student vs. admin).
+Real-Time Updates
+Automatically refresh the queue view using WebSockets or polling.
+Phase 2: Enhancements
+Notifications
+SMS/email alerts when a user is next in line.
+Configurable notification timing (e.g., 5 minutes before turn).
+Admin Features
+Pause/resume the queue.
+Prioritize specific students (e.g., urgent issues).
+Analytics dashboard (average wait time, peak hours).
+Wait Time Estimation
+Calculate estimated wait time based on queue length and historical data.
+Phase 3: Polish & Scale
+UI/UX Improvements
+Animations, responsive design, accessibility.
+Customizable themes (e.g., department branding).
+Testing
+Write unit/integration tests.
+Load testing for scalability.
+Deployment
+Deploy to a cloud provider.
+Set up CI/CD pipelines.
+
+5. Example API Endpoints
+POST /api/queue/join → Add user to queue
+DELETE /api/queue/leave → Remove user from queue
+GET /api/queue → Get current queue
+PATCH /api/queue/prioritize → Prioritize a user (admin-only)
+POST /api/auth/login → User login
+
+6. Sample User Flow
+Student:
+Log in → Join queue → Receive notifications → Leave queue after being helped.
+Admin:
+Log in → View/manage queue → Notify students → Close the session.
+
+7. Potential Extensions
+Support for multiple queues (e.g., different TAs/subjects).
+Integration with calendars (e.g., office hour scheduling).
+Priority levels (e.g., final-year students get priority).
+Mobile app version (React Native/Flutter).
+
+8. First Steps
+Set Up Repo: Create a GitHub/GitLab repository.
+Choose Stack: Finalize your tech stack (e.g., React + Firebase).
+Design Wireframes: Sketch the UI (Figma/Excalidraw).
+Build MVP: Start with a simple queue system (no auth → add auth later).
+Test Locally: Use tools like Postman to test APIs.
+
+9. Key Considerations
+Security: Protect sensitive data (e.g., hashed passwords, rate limiting).
+Scalability: Optimize for concurrent users during peak hours.
+User Experience: Ensure the queue status is always clear.
+Accessibility: Follow WCAG guidelines (e.g., screen reader support).
+
