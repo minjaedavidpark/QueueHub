@@ -66,9 +66,9 @@ function App() {
       <QueueList />
       
       {/* Button to show/hide admin login form */}
-      <button onClick={() => setShowAdminLogin(!showAdminLogin)}>
+      {/* <button onClick={() => setShowAdminLogin(!showAdminLogin)}>
         {showAdminLogin ? 'Cancel Admin Login' : 'Admin Login'}
-      </button>
+      </button> */}
 
       {showAdminLogin && (
         <form onSubmit={handleAdminLogin}>
