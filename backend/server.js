@@ -73,47 +73,34 @@ app.get('/api/queue', (req, res) => {
 
 // Student joins the queue
 app.post('/api/queue/join', authenticateUser, (req, res) => {
-  if (isQueuePaused) {
-    return res.status(403).json({ error: "Queue is paused" });
-  }
-
+  const { helpTopic, previousAttempts, deadlineProximity, firstTimeAsking, question } = req.body;
   const user = users.find(u => u.id === req.userId);
-  if (!user) return res.status(404).json({ error: "User not found" });
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
 
   // Check if user is already in queue
   if (queue.some(entry => entry.userId === req.userId)) {
     return res.status(400).json({ error: "You are already in queue" });
   }
 
-  const { helpTopic, previousAttempts, deadlineProximity, firstTimeAsking } = req.body;
   const newEntry = {
-    id: nextId++,
+    id: queue.length + 1,
     userId: req.userId,
     name: user.username,
     helpTopic,
+    question,
     timestamp: new Date(),
     status: "Waiting",
-    estimatedWaitTime: queue.length * AVERAGE_HELP_TIME_MINUTES, // in minutes
+    estimatedWaitTime: queue.length * 15, // 15 minutes per person
     position: queue.length + 1,
     previousAttempts,
     deadlineProximity,
-    firstTimeAsking,
-    waitTime: 0,
-    priorityScore: calculatePriorityScore({
-      previousAttempts,
-      deadlineProximity,
-      firstTimeAsking,
-      waitTime: 0
-    })
+    firstTimeAsking
   };
   
-  // Insert into queue based on priority score
-  const insertIndex = queue.findIndex(entry => entry.priorityScore < newEntry.priorityScore);
-  if (insertIndex === -1) {
-    queue.push(newEntry);
-  } else {
-    queue.splice(insertIndex, 0, newEntry);
-  }
+  queue.push(newEntry);
   
   res.status(201).json(newEntry);
 });
