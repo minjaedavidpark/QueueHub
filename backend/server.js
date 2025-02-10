@@ -196,35 +196,90 @@ app.delete('/api/admin/queue/:id', (req, res) => {
   res.json({ message: "User removed by admin" });
 });
 
-// Add a background task to update wait times and recalculate priorities
-setInterval(() => {
-  queue = queue.map(entry => {
-    const updatedEntry = {
-      ...entry,
-      waitTime: Math.floor((Date.now() - entry.timestamp) / 60000) // Convert to minutes
-    };
-    updatedEntry.priorityScore = calculatePriorityScore(updatedEntry);
-    return updatedEntry;
-  });
+// Mock AI suggestions based on topics and keywords
+const generateSuggestions = (question, topic) => {
+  const suggestions = [];
+  const lowercaseQuestion = question.toLowerCase();
+
+  // React-related suggestions
+  if (topic === 'React' || lowercaseQuestion.includes('react')) {
+    if (lowercaseQuestion.includes('state') || lowercaseQuestion.includes('useState')) {
+      suggestions.push({
+        title: 'Understanding React State',
+        description: 'Learn about React state management and hooks.',
+        links: [
+          { title: 'React State Docs', url: 'https://react.dev/learn/state-a-components-memory' },
+          { title: 'useState Hook Guide', url: 'https://react.dev/reference/react/useState' }
+        ]
+      });
+    }
+    if (lowercaseQuestion.includes('effect') || lowercaseQuestion.includes('useEffect')) {
+      suggestions.push({
+        title: 'Side Effects in React',
+        description: 'Master the useEffect hook and component lifecycle.',
+        links: [
+          { title: 'useEffect Docs', url: 'https://react.dev/reference/react/useEffect' },
+          { title: 'Common useEffect Patterns', url: 'https://react.dev/learn/synchronizing-with-effects' }
+        ]
+      });
+    }
+  }
+
+  // Node.js-related suggestions
+  if (topic === 'Node.js' || lowercaseQuestion.includes('node')) {
+    if (lowercaseQuestion.includes('express') || lowercaseQuestion.includes('server')) {
+      suggestions.push({
+        title: 'Express.js Fundamentals',
+        description: 'Learn about routing, middleware, and request handling in Express.',
+        links: [
+          { title: 'Express Guide', url: 'https://expressjs.com/en/guide/routing.html' },
+          { title: 'Middleware Explained', url: 'https://expressjs.com/en/guide/using-middleware.html' }
+        ]
+      });
+    }
+  }
+
+  // Database-related suggestions
+  if (topic === 'Database' || lowercaseQuestion.includes('database') || lowercaseQuestion.includes('sql')) {
+    suggestions.push({
+      title: 'Database Fundamentals',
+      description: 'Understanding database queries and operations.',
+      links: [
+        { title: 'SQL Basics', url: 'https://www.w3schools.com/sql/' },
+        { title: 'Database Design', url: 'https://www.postgresql.org/docs/current/tutorial.html' }
+      ]
+    });
+  }
+
+  // Add a general programming suggestion if no specific matches
+  if (suggestions.length === 0) {
+    suggestions.push({
+      title: 'Programming Best Practices',
+      description: 'General programming concepts and problem-solving strategies.',
+      links: [
+        { title: 'Debugging Guide', url: 'https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/JavaScript' },
+        { title: 'Clean Code Principles', url: 'https://github.com/ryanmcdermott/clean-code-javascript' }
+      ]
+    });
+  }
+
+  return suggestions;
+};
+
+// AI suggestions endpoint
+app.post('/api/ai/suggest', (req, res) => {
+  const { question, topic } = req.body;
   
-  // Re-sort queue based on updated priority scores
-  queue.sort((a, b) => b.priorityScore - a.priorityScore);
-}, 60000); // Update every minute
+  if (!question) {
+    return res.status(400).json({ error: 'Question is required' });
+  }
+
+  const suggestions = generateSuggestions(question, topic);
+  res.json({ suggestions });
+});
 
 // Start server
 const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });
-
-const calculatePriorityScore = (student) => {
-  let score = 0;
-  
-  // Factors that affect priority:
-  if (student.previousAttempts > 0) score += 10; // Student has tried to solve independently
-  if (student.deadlineProximity < 24) score += 15; // Urgent deadline within 24 hours
-  if (student.waitTime > 30) score += 20; // Long wait time bonus
-  if (student.firstTimeAsking) score += 5; // Encourage new students to seek help
-  
-  return score;
-};
