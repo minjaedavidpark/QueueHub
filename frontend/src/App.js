@@ -6,7 +6,7 @@ import Auth from './components/Auth';
 import QueueStatusTracker from './components/QueueStatusTracker';
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
   const [adminKey, setAdminKey] = useState('');
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -26,12 +26,17 @@ function App() {
     }
   };
 
-  const handleLogin = (token) => {
+  const handleLogin = (token, isAdminUser) => {
     setIsAuthenticated(true);
+    setIsAdmin(isAdminUser);
+    if (isAdminUser) {
+      setAdminKey('secret123'); // Set admin key for API calls
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
     setIsAuthenticated(false);
     setIsAdmin(false);
     setAdminKey('');

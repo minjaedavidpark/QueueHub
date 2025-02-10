@@ -11,8 +11,21 @@ const Auth = ({ onLogin }) => {
     e.preventDefault();
     setError('');
 
+    // Check for admin login
+    if (username === 'admin' && password === '123') {
+      localStorage.setItem('isAdmin', 'true');
+      localStorage.setItem('token', 'admin-token'); // Simple admin token
+      onLogin('admin-token', true);
+      return;
+    }
+
     try {
       if (isRegistering) {
+        // Don't allow registration with admin username
+        if (username === 'admin') {
+          setError('Username not allowed');
+          return;
+        }
         await axios.post('http://localhost:5001/api/auth/register', {
           username,
           password
@@ -24,7 +37,8 @@ const Auth = ({ onLogin }) => {
           password
         });
         localStorage.setItem('token', response.data.token);
-        onLogin(response.data.token);
+        localStorage.setItem('isAdmin', 'false');
+        onLogin(response.data.token, false);
       }
     } catch (err) {
       setError(err.response?.data?.error || 'An error occurred');
