@@ -2,42 +2,53 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function JoinQueueForm() {
-  const [name, setName] = useState('');
   const [helpTopic, setHelpTopic] = useState('React');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
     
-    axios.post('http://localhost:5001/api/queue/join', { name, helpTopic })
+    axios.post('http://localhost:5001/api/queue/join', 
+      { helpTopic },
+      { headers: { Authorization: `Bearer ${token}` }}
+    )
       .then(() => {
-        setName('');
         alert('Successfully joined the queue!');
       })
       .catch((error) => {
-        let errorMessage = 'Failed to join queue. Please try again.';
-        if (error.response) {
-          errorMessage = error.response.data.error || errorMessage;
-        }
-        alert(errorMessage);
+        setError(error.response?.data?.error || 'Failed to join queue');
+      });
+  };
+
+  const handleLeaveQueue = () => {
+    const token = localStorage.getItem('token');
+    
+    axios.post('http://localhost:5001/api/queue/leave', 
+      {},
+      { headers: { Authorization: `Bearer ${token}` }}
+    )
+      .then(() => {
+        alert('Successfully left the queue!');
+      })
+      .catch((error) => {
+        setError(error.response?.data?.error || 'Failed to leave queue');
       });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Your name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <select value={helpTopic} onChange={(e) => setHelpTopic(e.target.value)}>
-        <option>React</option>
-        <option>Node.js</option>
-        <option>Database</option>
-      </select>
-      <button type="submit">Join Queue</button>
-    </form>
+    <div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <select value={helpTopic} onChange={(e) => setHelpTopic(e.target.value)}>
+          <option>React</option>
+          <option>Node.js</option>
+          <option>Database</option>
+        </select>
+        <button type="submit">Join Queue</button>
+      </form>
+      <button onClick={handleLeaveQueue}>Leave Queue</button>
+    </div>
   );
 }
 
