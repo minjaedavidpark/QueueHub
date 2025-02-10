@@ -17,8 +17,8 @@ function App() {
   const handleAdminLogin = (e) => {
     e.preventDefault();
     const enteredKey = e.target.elements.adminKey.value;
-    // For simplicity, we use "secret123" as the valid admin key
-    if (enteredKey === 'secret123') {
+    // For simplicity, we use "123" as the valid admin key
+    if (enteredKey === '123') {
       setIsAdmin(true);
       setAdminKey(enteredKey);
     } else {
@@ -30,7 +30,7 @@ function App() {
     setIsAuthenticated(true);
     setIsAdmin(isAdminUser);
     if (isAdminUser) {
-      setAdminKey('secret123'); // Set admin key for API calls
+      setAdminKey('123'); // Set admin key for API calls
     }
   };
 

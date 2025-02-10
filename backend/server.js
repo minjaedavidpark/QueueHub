@@ -73,7 +73,7 @@ app.get('/api/queue', (req, res) => {
 
 app.post('/api/queue/join', (req, res) => {
   const adminKey = req.headers['admin-key'];
-  const isAdmin = adminKey === 'secret123';
+  const isAdmin = adminKey === '123';
 
   if (isAdmin) {
     // Admin adding a user (existing code)
@@ -178,7 +178,7 @@ app.post('/api/queue/leave', authenticateUser, (req, res) => {
 
 app.delete('/api/admin/queue/:id', (req, res) => {
   const adminKey = req.headers['admin-key'];
-  if (adminKey !== 'secret123') return res.status(401).json({ error: "Unauthorized" });
+  if (adminKey !== '123') return res.status(401).json({ error: "Unauthorized" });
 
   const id = parseInt(req.params.id);
   const index = queue.findIndex(entry => entry.id === id);
@@ -193,7 +193,7 @@ app.delete('/api/admin/queue/:id', (req, res) => {
 // Toggle pause/resume the queue
 app.patch('/api/admin/queue/pause', (req, res) => {
   const adminKey = req.headers['admin-key'];
-  if (adminKey !== 'secret123') return res.status(401).json({ error: "Unauthorized" });
+  if (adminKey !== '123') return res.status(401).json({ error: "Unauthorized" });
 
   isQueuePaused = !isQueuePaused;
   res.json({ isPaused: isQueuePaused });
@@ -202,7 +202,7 @@ app.patch('/api/admin/queue/pause', (req, res) => {
 // Prioritize a user (move their entry to the front of the queue)
 app.patch('/api/admin/queue/:id/prioritize', (req, res) => {
   const adminKey = req.headers['admin-key'];
-  if (adminKey !== 'secret123') return res.status(401).json({ error: "Unauthorized" });
+  if (adminKey !== '123') return res.status(401).json({ error: "Unauthorized" });
 
   const id = parseInt(req.params.id);
   const index = queue.findIndex(entry => entry.id === id);
@@ -216,7 +216,7 @@ app.patch('/api/admin/queue/:id/prioritize', (req, res) => {
 // Admin can remove a user from the queue
 app.delete('/api/admin/queue/:id', (req, res) => {
   const adminKey = req.headers['admin-key'];
-  if (adminKey !== 'secret123') return res.status(401).json({ error: "Unauthorized" });
+  if (adminKey !== '123') return res.status(401).json({ error: "Unauthorized" });
 
   const id = parseInt(req.params.id);
   queue = queue.filter(entry => entry.id !== id);
