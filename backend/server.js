@@ -85,7 +85,7 @@ app.post('/api/queue/join', authenticateUser, (req, res) => {
     return res.status(400).json({ error: "You are already in queue" });
   }
 
-  const { helpTopic } = req.body;
+  const { helpTopic, previousAttempts, deadlineProximity, firstTimeAsking } = req.body;
   const newEntry = {
     id: nextId++,
     userId: req.userId,
@@ -94,17 +94,27 @@ app.post('/api/queue/join', authenticateUser, (req, res) => {
     timestamp: new Date(),
     status: "Waiting",
     estimatedWaitTime: queue.length * AVERAGE_HELP_TIME_MINUTES, // in minutes
-    position: queue.length + 1
+    position: queue.length + 1,
+    previousAttempts,
+    deadlineProximity,
+    firstTimeAsking,
+    waitTime: 0,
+    priorityScore: calculatePriorityScore({
+      previousAttempts,
+      deadlineProximity,
+      firstTimeAsking,
+      waitTime: 0
+    })
   };
   
-  // Update wait times for all users in queue
-  queue = queue.map((entry, index) => ({
-    ...entry,
-    position: index + 1,
-    estimatedWaitTime: index * AVERAGE_HELP_TIME_MINUTES
-  }));
+  // Insert into queue based on priority score
+  const insertIndex = queue.findIndex(entry => entry.priorityScore < newEntry.priorityScore);
+  if (insertIndex === -1) {
+    queue.push(newEntry);
+  } else {
+    queue.splice(insertIndex, 0, newEntry);
+  }
   
-  queue.push(newEntry);
   res.status(201).json(newEntry);
 });
 
@@ -186,8 +196,35 @@ app.delete('/api/admin/queue/:id', (req, res) => {
   res.json({ message: "User removed by admin" });
 });
 
+// Add a background task to update wait times and recalculate priorities
+setInterval(() => {
+  queue = queue.map(entry => {
+    const updatedEntry = {
+      ...entry,
+      waitTime: Math.floor((Date.now() - entry.timestamp) / 60000) // Convert to minutes
+    };
+    updatedEntry.priorityScore = calculatePriorityScore(updatedEntry);
+    return updatedEntry;
+  });
+  
+  // Re-sort queue based on updated priority scores
+  queue.sort((a, b) => b.priorityScore - a.priorityScore);
+}, 60000); // Update every minute
+
 // Start server
 const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });
+
+const calculatePriorityScore = (student) => {
+  let score = 0;
+  
+  // Factors that affect priority:
+  if (student.previousAttempts > 0) score += 10; // Student has tried to solve independently
+  if (student.deadlineProximity < 24) score += 15; // Urgent deadline within 24 hours
+  if (student.waitTime > 30) score += 20; // Long wait time bonus
+  if (student.firstTimeAsking) score += 5; // Encourage new students to seek help
+  
+  return score;
+};
