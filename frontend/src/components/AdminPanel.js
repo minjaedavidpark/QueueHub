@@ -79,10 +79,10 @@ const AdminPanel = ({ adminKey, onLogout }) => {
   };
 
   return (
-    <div>
+    <div className="admin-panel">
       <h2>Admin Queue Management</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div style={{ marginBottom: '1rem' }}>
+      <div className="admin-controls">
         <button onClick={togglePause}>
           {isPaused ? "Resume Queue" : "Pause Queue"}
         </button>{' '}

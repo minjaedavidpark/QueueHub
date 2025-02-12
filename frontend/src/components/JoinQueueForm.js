@@ -53,56 +53,58 @@ function JoinQueueForm() {
   };
 
   return (
-    <div className="join-queue-form">
-      <h3>Join Queue</h3>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Topic:</label>
-          <select value={helpTopic} onChange={(e) => setHelpTopic(e.target.value)}>
-            <option value="React">React</option>
-            <option value="Node.js">Node.js</option>
-            <option value="Database">Database</option>
-          </select>
-        </div>
-        
-        <div className="form-group">
-          <label>What do you need help with?</label>
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Briefly describe your question or issue..."
-            rows="3"
-            maxLength="200"
-            required
-          />
-          <small>{200 - question.length} characters remaining</small>
-        </div>
+    <div className="card join-queue-form">
+      <div className="form-control">
+        <h3>Join Queue</h3>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Topic:</label>
+            <select value={helpTopic} onChange={(e) => setHelpTopic(e.target.value)}>
+              <option value="React">React</option>
+              <option value="Node.js">Node.js</option>
+              <option value="Database">Database</option>
+            </select>
+          </div>
+          
+          <div className="form-group">
+            <label>What do you need help with?</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Briefly describe your question or issue..."
+              rows="3"
+              maxLength="200"
+              required
+            />
+            <small>{200 - question.length} characters remaining</small>
+          </div>
 
-        <div className="form-group">
-          <label>How many times have you tried to solve this?</label>
-          <input
-            type="number"
-            min="0"
-            value={previousAttempts}
-            onChange={(e) => setPreviousAttempts(parseInt(e.target.value))}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Hours until deadline:</label>
-          <input
-            type="number"
-            min="1"
-            max="168"
-            value={deadlineProximity}
-            onChange={(e) => setDeadlineProximity(parseInt(e.target.value))}
-          />
-        </div>
-        
-        <button type="submit">Join Queue</button>
-      </form>
-      <button onClick={handleLeaveQueue}>Leave Queue</button>
+          <div className="form-group">
+            <label>How many times have you tried to solve this?</label>
+            <input
+              type="number"
+              min="0"
+              value={previousAttempts}
+              onChange={(e) => setPreviousAttempts(parseInt(e.target.value))}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Hours until deadline:</label>
+            <input
+              type="number"
+              min="1"
+              max="168"
+              value={deadlineProximity}
+              onChange={(e) => setDeadlineProximity(parseInt(e.target.value))}
+            />
+          </div>
+          
+          <button type="submit">Join Queue</button>
+        </form>
+        <button onClick={handleLeaveQueue}>Leave Queue</button>
+      </div>
     </div>
   );
 }

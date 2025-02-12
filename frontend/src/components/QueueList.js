@@ -19,7 +19,7 @@ const QueueList = () => {
   }, []);
 
   return (
-    <div className="queue-list">
+    <div className="card queue-list">
       <h3>Current Queue</h3>
       {queue.length === 0 ? (
         <p>Queue is empty</p>
@@ -36,6 +36,7 @@ const QueueList = () => {
                   <strong>Question:</strong> {entry.question}
                 </div>
               )}
+              <div className="status-badge">{entry.status}</div>
             </li>
           ))}
         </ul>

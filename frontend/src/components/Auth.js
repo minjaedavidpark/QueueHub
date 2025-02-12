@@ -46,7 +46,7 @@ const Auth = ({ onLogin }) => {
   };
 
   return (
-    <div>
+    <div className="auth-container">
       <h2>{isRegistering ? 'Register' : 'Login'}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>

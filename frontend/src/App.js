@@ -4,6 +4,7 @@ import AdminPanel from './components/AdminPanel';        // Component for admin 
 import JoinQueueForm from './components/JoinQueueForm';  // Form for users to join the queue
 import Auth from './components/Auth';
 import QueueStatusTracker from './components/QueueStatusTracker';
+import './styles/App.css';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
@@ -56,32 +57,41 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h2>User View</h2>
-      <button onClick={handleLogout}>Logout</button>
-      {/* JoinQueueForm allows users to add themselves to the queue */}
-      <JoinQueueForm />
-      <QueueStatusTracker />
-      {/* QueueList displays the current queue */}
-      <QueueList />
+    <>
+      <div className="floating-objects">
+        <div className="float-1"></div>
+        <div className="float-2"></div>
+        <div className="float-3"></div>
+      </div>
       
-      {/* Button to show/hide admin login form */}
-      {/* <button onClick={() => setShowAdminLogin(!showAdminLogin)}>
-        {showAdminLogin ? 'Cancel Admin Login' : 'Admin Login'}
-      </button> */}
+      <div className="App">
+        <nav className="header-nav">
+          <h2>User View</h2>
+          <button className="logout-button" onClick={handleLogout}>Logout</button>
+        </nav>
+        
+        {/* Left Sidebar */}
+        <JoinQueueForm />
+        
+        {/* Main Content */}
+        <div className="main-content">
+          <QueueStatusTracker />
+          <QueueList />
+        </div>
 
-      {showAdminLogin && (
-        <form onSubmit={handleAdminLogin}>
-          <input
-            type="password"
-            name="adminKey"
-            placeholder="Enter admin key"
-            required
-          />
-          <button type="submit">Login as Admin</button>
-        </form>
-      )}
-    </div>
+        {showAdminLogin && (
+          <form onSubmit={handleAdminLogin}>
+            <input
+              type="password"
+              name="adminKey"
+              placeholder="Enter admin key"
+              required
+            />
+            <button type="submit">Login as Admin</button>
+          </form>
+        )}
+      </div>
+    </>
   );
 }
 
