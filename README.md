@@ -74,8 +74,8 @@ A real-time queue management system designed for university office hours and TA 
 
 
 ### Admin Access
-- Username: `admin`
-- Password: `123`
+- Username: `admin@mail.utoronto.ca`
+- Password: `0123456789`
 
 ## API Endpoints
 
